@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield AI - Your Cybersecurity Guardian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #0a0a0f;
+            color: #00ff88;
+        }
+        .cyberpunk-border {
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+        .glow-text {
+            text-shadow: 0 0 5px #00ff88;
+        }
+        .topic-card { cursor: pointer; }
+        .topic-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #00ff88;
+            transition: all 0.3s ease;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="p-4 cyberpunk-border mb-8">
+        <h1 class="text-4xl font-bold text-center glow-text">CyberShield AI</h1>
+        <p class="text-center mt-2">Your Advanced Cybersecurity Awareness Platform</p>
+    </header>
+
+    <main class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <div class="flex-1">
+                <input type="text" id="searchInput" placeholder="Search cyber threats..." 
+                    class="w-full p-3 bg-black border-2 border-[#00ff88] rounded-lg focus:outline-none focus:shadow-outline">
+            </div>
+            <button id="voiceButton" class="p-3 cyberpunk-border rounded-lg hover:bg-[#00ff88] hover:text-black transition-colors">
+                <i class="bi bi-mic-fill"></i> Voice Search
+            </button>
+        </div>
+
+        <div id="advisory" class="mt-8 p-6 cyberpunk-border bg-black rounded-lg hidden">
+            <h2 class="text-2xl font-bold">Advisory</h2>
+            <p id="advisoryContent"></p>
+            <button id="readAloud" class="mt-4 p-3 cyberpunk-border rounded-lg">Read Aloud</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Topics dynamically inserted -->
+        </div>
+    </main>
+
+    <script type="module">
+        const topics = [
+            {name: "Job Offer Scams", description: "Scammers create fake job postings to extract fees.", 
+             advisory: "Job offer scams continue to proliferate worldwide. Victims are often drawn in by offers that appear legitimate but ultimately ask for payment before providing any services. To avoid falling prey to these scams, always validate job postings by cross-referencing with official company websites and avoid sharing unnecessary personal information before thorough verification. Anyone requesting money upfront is a strong indicator of a scam. Ensure to communicate through official channels and engage with recognized recruiters."}, 
+            {name: "Lottery Scams", description: "Fraudulent notifications claiming winners of fake lotteries.", 
+             advisory: "Lottery scams typically target individuals with promises of winnings in exchange for personal details or fees. Many people fall for these scams due to the lure of a significant payout. It's crucial to remember that legitimate lotteries do not require winners to pay upfront fees. Always verify the authenticity of lottery notifications by contacting the organization directly. If it sounds too good to be true, it likely is."}, 
+            {name: "Beneficiary Scams", description: "Scammers pretend to be beneficiaries of an estate to steal money.", 
+             advisory: "Beneficiary scams involve fraudsters reaching out to individuals claiming they are entitled to funds from a deceased person's estate. These scams often use sophisticated tactics, including personal information from social media. If you receive unsolicited communications about benefiting from an estate, do not provide personal information without further verification. Always consult with legal representatives or trusted acquaintances directly before taking any actions."}, 
+            {name: "Online Dating Scams", description: "Fraudsters create fake profiles to exploit emotional connections.", 
+             advisory: "Online dating scams often involve individuals creating fake profiles to establish emotional connections with victims, leading to requests for money. Be cautious when developing online relationships, especially with individuals who quickly ask for financial support. Protect your finances by never sending money to someone you've not met in person. Report suspicious profiles to the platforms and remain vigilant."}, 
+            {name: "Charity Fraud Scams", description: "Scammers exploit charitable intentions by creating fake campaigns.", 
+             advisory: "Charity fraud scams leverage current events, encouraging donations for fictitious causes. Before giving, conduct thorough research to verify the organization’s legitimacy. Genuine organizations often have established reputations and transparent financial disclosure. Utilize platforms like Charity Navigator or Better Business Bureau to confirm legitimacy. Protect your interests by only donating to organizations you are familiar with."}, 
+            {name: "Coronavirus Scams", description: "Frauds exploiting the pandemic for financial gain.", 
+             advisory: "The COVID-19 pandemic has given rise to numerous scams, from fake vaccines to fraudulent relief funds. Often disguised as health organizations, these scams prey on people's fears. Be cautious of unsolicited communications claiming to be from health authorities or government agencies, especially regarding vaccine information. Always consult official resources or websites for accurate information before engaging."},
+            {name: "Repair Scams", description: "Fake repair services that deceive consumers into paying for unnecessary work.", 
+             advisory: "Repair scams typically occur when individuals seek assistance for electronic devices or home repairs. Scammers may falsify issues with your equipment, overcharging for repairs or selling unnecessary services. Before agreeing to repairs, seek estimates from multiple service providers and check reviews online. Only hire licensed technicians and never feel pressured to make immediate decisions."},
+            {name: "Social Media Scams", description: "Fraudsters creating fake accounts to steal personal data.", 
+             advisory: "Social media scams have become increasingly popular, with scammers impersonating legitimate accounts to extract personal information or money. Always verify account authenticity, especially if approached for financial assistance or sensitive data. Don’t click on suspicious links or engage with unknown accounts. Report suspicious activities immediately to the platforms."},
+            {name: "Robocall Scams", description: "Automated calls that attempt to deceive individuals into providing personal information.", 
+             advisory: "Robocalls are automated messages that often pitch fraudulent services or offers. Recognize the dangers associated with these calls and never provide personal information. Utilize call-blocking features on your phones and consider registering your number with national Do Not Call lists to avoid unsolicited marketing."},
+            {name: "Messaging Scams", description: "Fraudulent messages aimed at tricking users into revealing information.", 
+             advisory: "Messaging scams utilize SMS or messaging apps, where scammers pose as trusted entities. Never reveal confidential information in response to these unsolicited messages. Always verify through official channels when approached by entities requesting information."},
+            {name: "Online Shopping Scams", description: "Fake e-commerce sites that offer goods that don't exist.", 
+             advisory: "Online shopping scams tempt consumers with irresistible deals. Thoroughly research retailers before buying, particularly if they seem to offer products at unrealistically low prices. Stick to verified platforms and check for customer reviews. Use secure payment methods to safeguard your financial data."},
+            {name: "Health Care Fraud", description: "Scams involving deceptive health care services or products.", 
+             advisory: "Healthcare fraud can range from fake treatments to misleading insurance offers. Always consult certified professionals and validate claims made by non-verified entities. Report fraudulent activities to healthcare authorities."},
+            {name: "Holiday Scams", description: "Scams exploiting holiday seasons to deceive consumers into making purchases.", 
+             advisory: "Holiday scams often tempt consumers with bogus offers or unsolicited gift cards. Always shop with reputable sources, and be wary of too-good-to-be-true discounts or sudden price drops on popular items."},
+            {name: "Money Mules", description: "Individuals recruited to help transfer stolen money unknowingly.", 
+             advisory: "Money mules often find themselves oblivious to their involvement in criminal activities. If approached by individuals requesting you to transfer money on their behalf, verify their intentions and the source of funds."},
+            {name: "Ransomware", description: "Malicious software that locks users out of their data until a ransom is paid.", 
+             advisory: "Ransomware can devastate individuals and organizations. Preventive measures include regular backups, updated antivirus software, and not engaging with suspicious emails or links."},
+            {name: "Romance Scams", description: "Scammers exploiting romantic relationships to gain funds.", 
+             advisory: "Romance scams target singles through online platforms, leading them to develop emotional connections and eventually ask for money. Always scrutinize requests for financial assistance from new acquaintances."},
+            {name: "Online Lottery Scams", description: "Frauds claiming individuals have won lotteries they never entered.", 
+             advisory: "Online lottery scams solicit personal information under the guise of notifying winners. Remember that legitimate lottery systems do not request fees upfront to claim winnings."},
+            {name: "Deep Fake Scams", description: "Fraudsters use AI to create fake videos to impersonate individuals.", 
+             advisory: "Deep fake scams have increased, especially for identity theft and financial fraud. Stay cautious about sharing sensitive information online and verify the authenticity of digital media before engaging."},
+            {name: "Social Engineering", description: "Manipulative tactics that exploit human psychology.", 
+             advisory: "Social engineering targets individuals' vulnerabilities. Protect your data by remaining aware and skeptical of unsolicited requests for information."},
+            {name: "Tech Support Scams", description: "Impersonators offering fake tech support for charges.", 
+             advisory: "Tech support scams typically involve unsolicited calls claiming assistance is required for your devices. Verify the source before engaging with unsolicited communications."},
+            {name: "Business Email Compromise", description: "Cybercriminals impersonate a company executive to steal money.", 
+             advisory: "Business email compromise scams lead to financial losses. Always verify requests for fund transfers and never engage with unsolicited correspondence without validation."},
+            {name: "Charity and Disaster Fraud", description: "Fakes pretending to be well-known charities seeking donations.", 
+             advisory: "Beware of fraudulent charity solicitations, especially after disasters. Always verify the legitimacy of organizations before donating."},
+            {name: "Election Crimes and Security", description: "Scams manipulating the electoral process to defraud voters.", 
+             advisory: "Stay informed about electoral procedures and be cautious of unsolicited requests for personal information during elections."},
+            {name: "Adoption Fraud", description: "Scams related to fraudulent adoption services or promises.", 
+             advisory: "Adoption fraud exploits desires for family, luring individuals into scams. Always consult legitimate agencies for adoption situations."},
+        ];
+
+        const topicsContainer = document.querySelector('.grid');
+        topics.forEach(topic => {
+            const card = createTopicCard(topic);
+            topicsContainer.appendChild(card);
+        });
+        
+        function createTopicCard(topic) {
+            const div = document.createElement('div');
+            div.className = 'topic-card p-4 cyberpunk-border rounded-lg';
+            div.innerHTML = `
+                <h3 class="text-xl font-bold mb-2">${topic.name}</h3>
+                <p class="text-sm opacity-80">${topic.description}</p>
+            `;
+            div.onclick = () => showInfo(topic);
+            return div;
+        }
+
+        function showInfo(topic) {
+            document.getElementById('advisoryContent').innerText = topic.advisory;
+            document.getElementById('advisory').classList.remove('hidden');
+        }
+
+        // Voice Search Implementation
+        const voiceButton = document.getElementById('voiceButton');
+        const searchInput = document.getElementById('searchInput');
+
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                voiceButton.classList.add('listening');
+                voiceButton.innerHTML = '<i class="bi bi-mic-fill"></i> Listening...';
+            };
+        
+            recognition.onend = () => {
+                voiceButton.classList.remove('listening');
+                voiceButton.innerHTML = '<i class="bi bi-mic-fill"></i> Voice Search';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                searchInput.value = transcript;
+                searchInput.dispatchEvent(new Event('input'));
+            };
+
+            voiceButton.onclick = () => {
+                recognition.start();
+            };
+        } else {
+            voiceButton.style.display = 'none';
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredTopics = topics.filter(topic => 
+                topic.name.toLowerCase().includes(searchTerm) ||
+                topic.description.toLowerCase().includes(searchTerm)
+            );
+            
+            topicsContainer.innerHTML = '';
+            filteredTopics.forEach(topic => {
+                const card = createTopicCard(topic);
+                topicsContainer.appendChild(card);
+            });
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
